@@ -39,6 +39,22 @@ export function daysBetween(from: string, to: string) {
   return days;
 }
 
+// Месяц храним как его первое число: YYYY-MM-01.
+export function monthStart(iso: string) {
+  return `${iso.slice(0, 7)}-01`;
+}
+
+export function addMonths(month: string, months: number) {
+  const d = toUTC(month);
+  d.setUTCMonth(d.getUTCMonth() + months, 1);
+  return d.toISOString().slice(0, 10);
+}
+
+// «октябрь 2026», «окт.»: название месяца по его первому числу.
+export function formatMonth(month: string, options: Intl.DateTimeFormatOptions = { month: "long", year: "numeric" }) {
+  return formatDay(month, options).replace(/\s*г\.$/, "");
+}
+
 export function formatDay(iso: string, options: Intl.DateTimeFormatOptions) {
   return new Intl.DateTimeFormat("ru-RU", { ...options, timeZone: "UTC" }).format(toUTC(iso));
 }

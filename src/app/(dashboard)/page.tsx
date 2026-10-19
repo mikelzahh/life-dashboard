@@ -6,6 +6,7 @@ import {
   StreaksWidget,
   TodayTasksWidget,
 } from "@/components/planner/sections";
+import { BalanceWidget, MonthExpensesWidget } from "@/components/finance/sections";
 
 export default function HomePage() {
   return (
@@ -22,8 +23,16 @@ export default function HomePage() {
             <HabitsTodayWidget />
           </Suspense>
         </Widget>
-        <Widget title="Баланс по счетам" />
-        <Widget title="Расходы за месяц" className="sm:col-span-2" />
+        <Widget title="Баланс по счетам">
+          <Suspense fallback={<WidgetSkeleton />}>
+            <BalanceWidget />
+          </Suspense>
+        </Widget>
+        <Widget title="Расходы за месяц" className="sm:col-span-2">
+          <Suspense fallback={<WidgetSkeleton rows={4} />}>
+            <MonthExpensesWidget />
+          </Suspense>
+        </Widget>
         <Widget title="Серии привычек">
           <Suspense fallback={<WidgetSkeleton />}>
             <StreaksWidget />

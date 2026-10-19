@@ -1,29 +1,6 @@
 "use server";
 
-import { refresh } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
-
-export type ActionResult = { error?: string };
-
-// Server actions доступны прямым POST-запросом, поэтому каждая проверяет вход.
-// Чужие строки защищает RLS, user_id подставляет база (default auth.uid()).
-async function authed() {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-  if (!data?.claims) throw new Error("Нужно войти");
-  return supabase;
-}
-
-function text(formData: FormData, key: string) {
-  const value = formData.get(key);
-  return typeof value === "string" ? value.trim() : "";
-}
-
-function done(error: { message: string } | null): ActionResult {
-  if (error) return { error: error.message };
-  refresh();
-  return {};
-}
+import { authed, done, text, type ActionResult } from "@/lib/actions";
 
 // ---------------------------------------------------------------------------
 // Задачи

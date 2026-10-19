@@ -53,6 +53,8 @@ export type Account = {
   name: string;
   kind: AccountKind;
   currency: string;
+  // Остаток до первой операции; поле из миграции 20261019120000_finance.
+  opening_balance: number;
   archived_at: string | null;
   created_at: string;
 };
@@ -74,8 +76,31 @@ export type Transaction = {
   amount: number;
   occurred_on: string;
   note: string | null;
+  // Отпечаток строки CSV-импорта, у ручных операций null.
+  import_key: string | null;
   created_at: string;
 };
+
+// Представления из миграции 20261019120000_finance.
+export type AccountBalance = {
+  account_id: string;
+  user_id: string;
+  balance: number;
+  transactions_count: number;
+};
+
+export type MonthlyTotal = {
+  user_id: string;
+  // Первое число месяца, YYYY-MM-DD.
+  month: string;
+  currency: string;
+  kind: MoneyFlow;
+  category_id: string | null;
+  total: number;
+  transactions_count: number;
+};
+
+type View<Row> = { Row: Row; Relationships: [] };
 
 export type Database = {
   public: {
@@ -87,7 +112,10 @@ export type Database = {
       categories: Table<Category, "name" | "kind">;
       transactions: Table<Transaction, "account_id" | "kind" | "amount">;
     };
-    Views: Record<string, never>;
+    Views: {
+      account_balances: View<AccountBalance>;
+      monthly_totals: View<MonthlyTotal>;
+    };
     Functions: Record<string, never>;
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

@@ -1,5 +1,6 @@
 import "server-only";
 import { cache } from "react";
+import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { Habit, Task } from "@/lib/supabase/database.types";
@@ -27,6 +28,8 @@ export type PlannerData = {
 export const getPlannerData = cache(async (): Promise<PlannerData | null> => {
   if (!isSupabaseConfigured) return null;
 
+  // Данные и «сегодня» только во время запроса: при пререндере их считать нельзя.
+  await connection();
   const supabase = await createClient();
   const today = toLocalISO();
   const calendarFrom = weekStart(addDays(today, -7 * (CALENDAR_WEEKS - 1)));
